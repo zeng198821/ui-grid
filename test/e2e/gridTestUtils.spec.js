@@ -18,6 +18,27 @@
  */
 module.exports = {
   /**
+  * Helper function that reloads the page between each test if the current browser is Firefox
+  *
+  * @example
+  * <pre>
+  *   gridTestUtils.firefoxReload();
+  * </pre>
+  */
+  firefoxReload: function () {
+    beforeEach(function () {
+      return browser.getCapabilities().then(function (cap) {
+        if (cap.caps_.browserName === 'firefox') {
+          return browser.refresh();
+        }
+        else {
+          return protractor.promise.when(true);
+        }
+      });
+    });
+  },
+
+  /**
   * Helper function for returning a grid element.
   * @param gridId Id of grid to return.
   *
@@ -64,7 +85,9 @@ module.exports = {
   * </pre>
   */
   selectRow: function( gridId, rowNum ) {
-    this.getRow( gridId, rowNum ).click();
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
+    var row = this.getRow( gridId, rowNum );
+    browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
   },
 
   /**
@@ -332,7 +355,8 @@ module.exports = {
   clickHeaderCell: function( gridId, colNumber ) {
     var headerCell = this.headerCell( gridId, colNumber);
 
-    headerCell.click();
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
+    return browser.actions().mouseMove(headerCell).mouseDown(headerCell).mouseUp().perform();
   },
 
   /**
@@ -384,9 +408,12 @@ module.exports = {
   shiftClickHeaderCell: function( gridId, colNumber ) {
     var headerCell = this.headerCell( gridId, colNumber);
 
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
     browser.actions()
       .keyDown(protractor.Key.SHIFT)
-      .click(headerCell)
+      .mouseMove(headerCell)
+      .mouseDown(headerCell)
+      .mouseUp()
       .keyUp(protractor.Key.SHIFT)
       .perform();
   },
@@ -417,10 +444,14 @@ module.exports = {
   clickColumnMenu: function( gridId, colNumber, menuItemNumber ) {
     var headerCell = this.headerCell( gridId, colNumber);
 
-    headerCell.element( by.css( '.ui-grid-column-menu-button' ) ).click();
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
+    var menuButton = headerCell.element( by.css( '.ui-grid-column-menu-button' ) );
+    browser.actions().mouseMove(menuButton).mouseDown(menuButton).mouseUp().perform();
 
     var columnMenu = this.getGrid( gridId ).element( by.css( '.ui-grid-column-menu' ));
-    columnMenu.element( by.repeater('item in menuItems').row(menuItemNumber) ).click();
+    var row = columnMenu.element( by.repeater('item in menuItems').row(menuItemNumber) );
+
+    return browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
   },
 
   /**
@@ -442,7 +473,7 @@ module.exports = {
   *
   */
   clickColumnMenuSortAsc: function( gridId, colNumber ) {
-    this.clickColumnMenu( gridId, colNumber, 0);
+    return this.clickColumnMenu( gridId, colNumber, 0);
   },
 
   /**
@@ -464,7 +495,7 @@ module.exports = {
   *
   */
   clickColumnMenuSortDesc: function( gridId, colNumber ) {
-    this.clickColumnMenu( gridId, colNumber, 1);
+    return this.clickColumnMenu( gridId, colNumber, 1);
   },
 
   /**
@@ -486,7 +517,7 @@ module.exports = {
   *
   */
   clickColumnMenuRemoveSort: function( gridId, colNumber ) {
-    this.clickColumnMenu( gridId, colNumber, 2);
+    return this.clickColumnMenu( gridId, colNumber, 2);
   },
 
   /**
@@ -508,7 +539,7 @@ module.exports = {
   *
   */
   clickColumnMenuHide: function( gridId, colNumber ) {
-    this.clickColumnMenu( gridId, colNumber, 3);
+    return this.clickColumnMenu( gridId, colNumber, 3);
   },
 
   /**
@@ -575,7 +606,10 @@ module.exports = {
   cancelFilterInColumn: function( gridId, colNumber ) {
     var headerCell = this.headerCell( gridId, colNumber);
 
-    headerCell.element( by.css( '.ui-grid-icon-cancel' ) ).click();
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
+    var cancelIcon = headerCell.element( by.css( '.ui-grid-icon-cancel' ) );
+
+    return browser.actions().mouseMove(cancelIcon).mouseDown(cancelIcon).mouseUp().perform();
   },
 
   /**
@@ -618,7 +652,10 @@ module.exports = {
   */
   expectVisibleColumnMenuItems: function( gridId, colNumber, expectItems ) {
     var headerCell = this.headerCell( gridId, colNumber );
-    headerCell.element( by.css( '.ui-grid-column-menu-button' ) ).click();
+
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
+    var colMenuButton = headerCell.element( by.css( '.ui-grid-column-menu-button' ) );
+    browser.actions().mouseMove(colMenuButton).mouseDown(colMenuButton).mouseUp().perform();
 
     var displayedCount = 0;
     var columnMenu = this.getGrid( gridId ).element( by.css( '.ui-grid-column-menu' ));
@@ -653,7 +690,9 @@ module.exports = {
   */
   expectVisibleGridMenuItems: function( gridId, expectItems ) {
     var gridMenuButton = this.getGrid( gridId ).element( by.css ( '.ui-grid-menu-button' ) );
-    gridMenuButton.click();
+
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
+    browser.actions().mouseMove(gridMenuButton).mouseDown(gridMenuButton).mouseUp().perform();
 
     var displayedCount = 0;
 
@@ -690,9 +729,13 @@ module.exports = {
   */
   clickGridMenuItem: function( gridId, itemNumber ) {
     var gridMenuButton = this.getGrid( gridId ).element( by.css ( '.ui-grid-menu-button' ) );
-    gridMenuButton.click();
 
-    gridMenuButton.element( by.repeater('item in menuItems').row( itemNumber) ).click();
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
+    browser.actions().mouseMove(gridMenuButton).mouseDown(gridMenuButton).mouseUp().perform();
+
+    var row = gridMenuButton.element( by.repeater('item in menuItems').row( itemNumber) );
+
+    return browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
   },
 
   /**
@@ -712,6 +755,8 @@ module.exports = {
   */
   unclickGridMenu: function( gridId ) {
     var gridMenuButton = this.getGrid( gridId ).element( by.css ( '.ui-grid-menu-button' ) );
-    gridMenuButton.click();
+
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
+    return browser.actions().mouseMove(gridMenuButton).mouseDown(gridMenuButton).mouseUp().perform();
   }
 };
