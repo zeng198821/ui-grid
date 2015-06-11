@@ -39,6 +39,24 @@ module.exports = {
   },
 
   /**
+  * Helper function that uses mouseMove/mouseDown/mouseUp for clicking.
+  *
+  * This is unfortunately needed because `.click()` doesn't work right in Firefox.
+  *
+  * @param element {WebElement}
+  *
+  * @returns {Promise} A promise that is resolved when the click has been performed.
+  *
+  * @example
+  * <pre>
+  *   gridTestUtils.click(element);
+  * </pre>
+  */
+  click: function (element) {
+    return browser.actions().mouseMove(element).mouseDown(element).mouseUp().perform();
+  },
+
+  /**
   * Helper function for returning a grid element.
   * @param gridId Id of grid to return.
   *
@@ -87,7 +105,7 @@ module.exports = {
   selectRow: function( gridId, rowNum ) {
     // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
     var row = this.getRow( gridId, rowNum );
-    browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
+    return browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
   },
 
   /**
@@ -381,7 +399,7 @@ module.exports = {
     var resizer = headerCell.all( by.css( '.ui-grid-column-resizer' )).first();
     var menuButton = headerCell.element( by.css( '.ui-grid-column-menu-button' ));
 
-    browser.actions()
+    return browser.actions()
       .mouseDown(resizer)
       .mouseMove(menuButton)
       .mouseUp()
@@ -409,7 +427,7 @@ module.exports = {
     var headerCell = this.headerCell( gridId, colNumber);
 
     // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
-    browser.actions()
+    return browser.actions()
       .keyDown(protractor.Key.SHIFT)
       .mouseMove(headerCell)
       .mouseDown(headerCell)
