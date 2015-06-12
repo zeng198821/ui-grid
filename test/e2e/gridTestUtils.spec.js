@@ -29,7 +29,13 @@ module.exports = {
     beforeEach(function () {
       return browser.getCapabilities().then(function (cap) {
         if (cap.caps_.browserName === 'firefox') {
-          return browser.refresh();
+          return browser.refresh()
+            .then(function () {
+              // Remove the fixed navbar, it overlays elements and intercepts events in Firefox
+              return browser.driver.executeScript(function () {
+                angular.element(document.getElementsByClassName('navbar')).remove();
+              });
+            });
         }
         else {
           return protractor.promise.when(true);
@@ -375,6 +381,7 @@ module.exports = {
 
     // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
     return browser.actions().mouseMove(headerCell).mouseDown(headerCell).mouseUp().perform();
+    // return headerCell.click();
   },
 
   /**

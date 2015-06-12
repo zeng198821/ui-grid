@@ -163,19 +163,25 @@ You can swap out data in the grid by simply providing a different reference.
         gridTestUtils.expectHeaderColumnCount( 'grid1', 4 );
       });
 
-      iit('swap data and data changes', function () {
+      it('swap data and data changes', function () {
         gridTestUtils.expectRowCount( 'grid1', 4 );
         gridTestUtils.expectRowValuesMatch( 'grid1', 0, [ 'Cox', 'Carney', 'Enormo', 'male' ] );
         gridTestUtils.expectRowValuesMatch( 'grid1', 1, [ 'Lorraine', 'Wise', 'Comveyer', 'female' ] );
 
-        gridTestUtils.click(element( by.id( "swapData" ) ))
+        element( by.id( "swapData" ) ).click()
+          .then(function () {
+            return browser.waitForAngular();
+          })
           .then(function () {
             gridTestUtils.expectRowCount( 'grid1', 6 );
             gridTestUtils.expectRowValuesMatch( 'grid1', 0, [ 'Waters', 'Shepherd', 'Kongene', 'true' ] );
             gridTestUtils.expectRowValuesMatch( 'grid1', 1, [ 'Hopper', 'Zamora', 'Acium', 'true' ] );
           })
           .then(function () {
-            return gridTestUtils.click(element( by.id( "swapData" ) ));
+            return element( by.id( "swapData" ) ).click();
+          })
+          .then(function () {
+            return browser.waitForAngular();
           })
           .then(function () {
             gridTestUtils.expectRowCount( 'grid1', 4 );
@@ -187,21 +193,36 @@ You can swap out data in the grid by simply providing a different reference.
       it('add data and data changes', function () {
         gridTestUtils.expectRowCount( 'grid1', 4 );
 
-        element( by.id( "addData" ) ).click();
-        gridTestUtils.expectRowCount( 'grid1', 5 );
-        gridTestUtils.expectRowValuesMatch( 'grid1', 4, [ 'New 5', 'Person 5', 'abc', 'male' ] );
+        element( by.id( "addData" ) ).click()
+          .then(function () {
+            return browser.waitForAngular();
+          })
+          .then(function () {
+            gridTestUtils.expectRowCount( 'grid1', 5 );
+            gridTestUtils.expectRowValuesMatch( 'grid1', 4, [ 'New 5', 'Person 5', 'abc', 'male' ] );
+          });
 
-        element( by.id( "addData" ) ).click();
-        gridTestUtils.expectRowCount( 'grid1', 6 );
-        gridTestUtils.expectRowValuesMatch( 'grid1', 5, [ 'New 6', 'Person 6', 'abc', 'male' ] );
+        element( by.id( "addData" ) ).click()
+          .then(function () {
+            return browser.waitForAngular();
+          })
+          .then(function () {
+            gridTestUtils.expectRowCount( 'grid1', 6 );
+            gridTestUtils.expectRowValuesMatch( 'grid1', 5, [ 'New 6', 'Person 6', 'abc', 'male' ] );
+          });
       });
 
       it('remove data and data changes', function () {
         gridTestUtils.expectRowCount( 'grid1', 4 );
 
-        element( by.id( "removeFirstRow" ) ).click();
-        gridTestUtils.expectRowCount( 'grid1', 3 );
-        gridTestUtils.expectRowValuesMatch( 'grid1', 0, [ 'Lorraine', 'Wise', 'Comveyer', 'female' ] );
+        element( by.id( "removeFirstRow" ) ).click()
+          .then(function () {
+            return browser.waitForAngular();
+          })
+          .then(function () {
+            gridTestUtils.expectRowCount( 'grid1', 3 );
+            gridTestUtils.expectRowValuesMatch( 'grid1', 0, [ 'Lorraine', 'Wise', 'Comveyer', 'female' ] );
+          });
       });
     });
   </file>
