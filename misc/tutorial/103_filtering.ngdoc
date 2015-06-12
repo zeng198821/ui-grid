@@ -214,6 +214,8 @@ Refer {@link 321_singleFilter singleFilter tutorial}, it is possible to implemen
     var gridTestUtils = require('../../test/e2e/gridTestUtils.spec.js');
 
     describe('first grid on the page, filtered by male by default', function() {
+      gridTestUtils.firefoxReload();
+
       it('grid should have seven visible columns', function () {
         gridTestUtils.expectHeaderColumnCount( 'grid1', 7 );
       });
@@ -233,16 +235,26 @@ Refer {@link 321_singleFilter singleFilter tutorial}, it is possible to implemen
       });
 
       it('cancel filter on gender column and on date column, should now see Bishop Carr in third row', function() {
-        gridTestUtils.cancelFilterInColumn( 'grid1', 1 );
-        gridTestUtils.cancelFilterInColumn( 'grid1', 6 );
-        gridTestUtils.expectCellValueMatch( 'grid1', 2, 0, 'Bishop Carr' );
+        gridTestUtils.cancelFilterInColumn( 'grid1', 1 )
+          .then(function () {
+            return gridTestUtils.cancelFilterInColumn( 'grid1', 6 );
+          })
+          .then(function () {
+            gridTestUtils.expectCellValueMatch( 'grid1', 2, 0, 'Bishop Carr' );
+          });
       });
 
-      iit('filter on email column, should automatically do "ends with"', function() {
-        gridTestUtils.cancelFilterInColumn( 'grid1', 1 );
-        gridTestUtils.cancelFilterInColumn( 'grid1', 6 );
-        gridTestUtils.enterFilterInColumn( 'grid1', 3, 'digirang.com' );
-        gridTestUtils.expectRowCount( 'grid1', 2 );
+      it('filter on email column, should automatically do "ends with"', function() {
+        gridTestUtils.cancelFilterInColumn( 'grid1', 1 )
+          .then(function () {
+            return gridTestUtils.cancelFilterInColumn( 'grid1', 6 );
+          })
+          .then(function () {
+            return gridTestUtils.enterFilterInColumn( 'grid1', 3, 'digirang.com' );
+          })
+          .then(function () {
+            gridTestUtils.expectRowCount( 'grid1', 2 );
+          });
       });
     });
   </file>
