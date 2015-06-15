@@ -149,17 +149,21 @@ See the example below for usage.
         gridTestUtils.expectCellValueMatch( 'grid1', 2, 1, 'female' );
         gridTestUtils.expectCellValueMatch( 'grid1', 3, 1, 'female' );
 
-        gridTestUtils.clickHeaderCell( 'grid1', 1 );
-        gridTestUtils.expectCellValueMatch( 'grid1', 0, 1, 'male' );
-        gridTestUtils.expectCellValueMatch( 'grid1', 1, 1, 'male' );
-        gridTestUtils.expectCellValueMatch( 'grid1', 2, 1, 'male' );
-        gridTestUtils.expectCellValueMatch( 'grid1', 3, 1, 'male' );
+        gridTestUtils.clickHeaderCell( 'grid1', 1 )
+          .then(function () {
+            gridTestUtils.expectCellValueMatch( 'grid1', 0, 1, 'male' );
+            gridTestUtils.expectCellValueMatch( 'grid1', 1, 1, 'male' );
+            gridTestUtils.expectCellValueMatch( 'grid1', 2, 1, 'male' );
+            gridTestUtils.expectCellValueMatch( 'grid1', 3, 1, 'male' );
 
-        gridTestUtils.clickHeaderCell( 'grid1', 1 );
-        gridTestUtils.expectCellValueMatch( 'grid1', 0, 1, 'female' );
-        gridTestUtils.expectCellValueMatch( 'grid1', 1, 1, 'female' );
-        gridTestUtils.expectCellValueMatch( 'grid1', 2, 1, 'female' );
-        gridTestUtils.expectCellValueMatch( 'grid1', 3, 1, 'female' );
+            return gridTestUtils.clickHeaderCell( 'grid1', 1 );
+          })
+          .then(function () {
+            gridTestUtils.expectCellValueMatch( 'grid1', 0, 1, 'female' );
+            gridTestUtils.expectCellValueMatch( 'grid1', 1, 1, 'female' );
+            gridTestUtils.expectCellValueMatch( 'grid1', 2, 1, 'female' );
+            gridTestUtils.expectCellValueMatch( 'grid1', 3, 1, 'female' );
+          });
       });
 
       it('6 visible items in the third column, implying hide option', function () {
@@ -169,7 +173,6 @@ See the example below for usage.
       it('click header to sort third column, 7 visible items in the third column, implying remove sort option', function () {
         gridTestUtils.clickHeaderCell( 'grid1', 2 )
           .then(function () {
-            browser.debugger();
             gridTestUtils.expectVisibleColumnMenuItems( 'grid1', 2, 7 );
           });
       });
