@@ -44,6 +44,18 @@ module.exports = {
     });
   },
 
+  isFirefox: function () {
+    return browser.getCapabilities()
+      .then(function (cap) {
+        if (cap.caps_.browserName === 'firefox') {
+          return true;
+        }
+        else {
+         return false;
+        }
+      });
+  },
+
   /**
   * Helper function that uses mouseMove/mouseDown/mouseUp for clicking.
   *
@@ -467,16 +479,20 @@ module.exports = {
   *
   */
   clickColumnMenu: function( gridId, colNumber, menuItemNumber ) {
+    var self = this;
+
     var headerCell = this.headerCell( gridId, colNumber);
 
     // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
     var menuButton = headerCell.element( by.css( '.ui-grid-column-menu-button' ) );
-    browser.actions().mouseMove(menuButton).mouseDown(menuButton).mouseUp().perform();
 
-    var columnMenu = this.getGrid( gridId ).element( by.css( '.ui-grid-column-menu' ));
-    var row = columnMenu.element( by.repeater('item in menuItems').row(menuItemNumber) );
+    return browser.actions().mouseMove(menuButton).mouseDown(menuButton).mouseUp().perform()
+      .then(function () {
+        var columnMenu = self.getGrid( gridId ).element( by.css( '.ui-grid-column-menu' ));
+        var row = columnMenu.element( by.repeater('item in menuItems').row(menuItemNumber) );
 
-    return browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
+        return browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
+      });
   },
 
   /**
@@ -632,9 +648,18 @@ module.exports = {
     var headerCell = this.headerCell( gridId, colNumber);
 
     // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
-    var cancelIcon = headerCell.element( by.css( '.ui-grid-icon-cancel' ) );
+    var cancelButton = headerCell.element( by.css( '.ui-grid-icon-cancel' ) ).element(by.xpath('..'));
 
-    return browser.actions().mouseMove(cancelIcon).mouseDown(cancelIcon).mouseUp().perform();
+    return browser.actions().mouseMove(cancelButton).mouseDown(cancelButton).mouseUp().perform();
+  },
+
+  cancelFilterInColumnFor103: function( gridId, colNumber ) {
+    var headerCell = this.headerCell( gridId, colNumber);
+
+    // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
+    var cancelButton = headerCell.element( by.css( '.ui-grid-icon-cancel' ) );
+
+    return browser.actions().mouseMove(cancelButton).mouseDown(cancelButton).mouseUp().perform();
   },
 
   /**
@@ -756,11 +781,12 @@ module.exports = {
     var gridMenuButton = this.getGrid( gridId ).element( by.css ( '.ui-grid-menu-button' ) );
 
     // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
-    browser.actions().mouseMove(gridMenuButton).mouseDown(gridMenuButton).mouseUp().perform();
+    return browser.actions().mouseMove(gridMenuButton).mouseDown(gridMenuButton).mouseUp().perform()
+      .then(function () {
+        var row = gridMenuButton.element( by.repeater('item in menuItems').row( itemNumber) );
 
-    var row = gridMenuButton.element( by.repeater('item in menuItems').row( itemNumber) );
-
-    return browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
+        return browser.actions().mouseMove(row).mouseDown(row).mouseUp().perform();
+      });
   },
 
   /**
