@@ -705,23 +705,25 @@ module.exports = {
 
     // NOTE: Can't do .click() as it doesn't work when webdriving Firefox
     var colMenuButton = headerCell.element( by.css( '.ui-grid-column-menu-button' ) );
-    browser.actions().mouseMove(colMenuButton).mouseDown(colMenuButton).mouseUp().perform();
 
-    var displayedCount = 0;
-    var columnMenu = this.getGrid( gridId ).element( by.css( '.ui-grid-column-menu' ));
+    return browser.actions().mouseMove(colMenuButton).mouseDown(colMenuButton).mouseUp().perform()
+      .then(function () {
+        var displayedCount = 0;
+        var columnMenu = this.getGrid( gridId ).element( by.css( '.ui-grid-column-menu' ));
 
-    var menuItems = columnMenu.all( by.css( '.ui-grid-menu-item' ) );
+        var menuItems = columnMenu.all( by.css( '.ui-grid-menu-item' ) );
 
-    menuItems.map(function(elm) {
-      return elm.isDisplayed();
-    }).then( function( displayedArray ){
-      for ( var i = 0; i < displayedArray.length; i++ ){
-        if ( displayedArray[i] ){
-          displayedCount++;
-        }
-      }
-      expect(displayedCount).toEqual( expectItems );
-    });
+        menuItems.map(function(elm) {
+          return elm.isDisplayed();
+        }).then( function( displayedArray ){
+          for ( var i = 0; i < displayedArray.length; i++ ){
+            if ( displayedArray[i] ){
+              displayedCount++;
+            }
+          }
+          expect(displayedCount).toEqual( expectItems );
+        });
+      });
   },
 
   /**

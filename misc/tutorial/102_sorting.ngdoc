@@ -293,7 +293,7 @@ include `string`, `number`, `numberStr` and `date`.  If you use date be aware th
             gridTestUtils.expectCellValueMatch( 'grid2', 0, 0, 'Ethel Price' );
           })
           .then(function () {
-            gridTestUtils.clickHeaderCell( 'grid2', 1 );
+            return gridTestUtils.clickHeaderCell( 'grid2', 1 );
           })
           .then(function () {
             gridTestUtils.expectCellValueMatch( 'grid2', 0, 0, 'Wilder Gonzales' );
